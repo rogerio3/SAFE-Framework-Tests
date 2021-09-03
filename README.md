@@ -69,7 +69,7 @@ Method: POST
 Endpoint: http://localhost:8085/api/IApi/addTransaction
 JSON body example:
 
-```yaml
+```json
 [
 	{
 	"pairs": "USD/GBP",
