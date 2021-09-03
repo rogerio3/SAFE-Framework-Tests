@@ -1,6 +1,8 @@
 # SAFE Template
 
-This template can be used to generate a full-stack web application using the [SAFE Stack](https://safe-stack.github.io/). It was created using the dotnet [SAFE Template](https://safe-stack.github.io/docs/template-overview/). If you want to learn more about the template why not start with the [quick start](https://safe-stack.github.io/docs/quickstart/) guide?
+This template can be used to generate a back-end application using the [SAFE Stack](https://safe-stack.github.io/). It was created using the dotnet [SAFE Template](https://safe-stack.github.io/docs/template-overview/). If you want to learn more about the template why not start with the [quick start](https://safe-stack.github.io/docs/quickstart/) guide?
+
+
 
 ## Install pre-requisites
 
@@ -10,7 +12,25 @@ You'll need to install the following pre-requisites in order to build SAFE appli
 * [Node LTS](https://nodejs.org/en/download/)
 
 ## Starting the application
+You should have docker installed on your PC.
 
+At first clone this repository to a folder on your local machine.
+
+To set up the environment just start the command
+
+```shell
+repo root> docker-compose up -d
+```
+It will start the database to interact with the application and the PGAdmin if you need to interact with database.
+
+PGAdmin shoud be accessed in your Browser at address http://localhost:8000/browser/#
+Initial configurations:
+- Address: db
+- Username: postgres
+- Password: docker
+
+
+If you cou
 Before you run the project **for the first time only** you must install dotnet "local tools" with this command:
 
 ```bash
@@ -22,24 +42,43 @@ To concurrently run the server and the client components in watch mode use the f
 ```bash
 dotnet run
 ```
+## Migrations
 
-Then open `http://localhost:8080` in your browser.
+You can firstly make changes on your model on file src/Server/Models/palladris.fs
 
-The build project in root directory contains a couple of different build targets. You can specify them after `--` (target name is case-insensitive).
-
-To run concurrently server and client tests in watch mode (you can run this command in parallel to the previous one in new terminal):
-
+After you can run command
 ```bash
-dotnet run -- RunTests
+dotnet ef migrations add YYY
 ```
+where:
+YYY - Some name to manage you what you've done.
 
-Client tests are available under `http://localhost:8081` in your browser and server tests are running in watch mode in console.
-
-Finally, there are `Bundle` and `Azure` targets that you can use to package your app and deploy to Azure, respectively:
+So you can apply your changes to the Database with command:
 
 ```bash
-dotnet run -- Bundle
-dotnet run -- Azure
+dotnet ef database update
+```
+## Endpoints Routes
+
+- Get all transactions
+Method: GET
+Endpoint: http://localhost:8085/api/IApi/
+
+- Add a new transaction
+Method: POST
+Endpoint: http://localhost:8085/api/IApi/addTransaction
+JSON body example:
+
+```yaml
+[
+	{
+	"pairs": "USD/GBP",
+	"provider": "provider 300",
+	"price": 0.7218,
+	"quantity": 10000000,
+	"transactiondate": "2021-09-01"
+	}
+]
 ```
 
 ## SAFE Stack Documentation

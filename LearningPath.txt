@@ -118,14 +118,15 @@ https://github.com/fsprojects/SQLProvider
 
 
 
-Instalar esses dois na pasta src/Server:
+Install packages:
 
-EntityFrameworkCore.FSharp
-Npgsql.EntityFrameworkCore.PostgreSQL
+dotnet paket add EntityFrameworkCore.FSharp -p Server
+dotnet paket add Npgsql.EntityFrameworkCore.PostgreSQL -p Server
+dotnet paket add Npgsql.FSharp -p Server
 
-depois os comandos na pasta src/Server:
+Building Database:
 
-dotnet ef migrations add Initial -v -c PalladrisContext -n Migrations
+cd src/Server && dotnet ef migrations add Initial -v -c PalladrisContext -n Migrations
 dotnet ef database update -v
 
 adding -v at the end of dotnet ef makes it exibits output data when commands
