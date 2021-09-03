@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+#   app:
+#     build: .
+#     entrypoint: .docker/entrypoint.sh
+#     container_name: apivendas-app
+#     ports:
+#       - '3333:3333'
+#     volumes:
+#       - .:/home/node/app
+#     depends_on:
+#       - db
+
+  ubuntu:
+    container_name: ubuntu
+    image: ubuntu:18.04
+    restart: on-failure
+    command: ["sleep","infinity"]
+
+  db:
+    build: .docker/postgres
+    container_name: palladris-db
+    restart: always
+    tty: true
+    ports:
+      - '5432:5432'
+    volumes:
+      - .docker/dbdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=palladris
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: palladris-pgadmin
+    tty: true
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - '8000:80'
+    depends_on:
+      - db

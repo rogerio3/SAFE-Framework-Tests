@@ -1,0 +1,150 @@
+- Project understand - ok
+- Install .NET - ok
+- Environment:
+    - Docker - ok
+    - Docker Ubuntu - ok
+    - Docker Postgres - ok
+    - Docker pgadmin - ok
+- Learn basics on dotnet - But information less informative - SAFE?
+- Learn F# - Language to be used on development... Source https://docs.microsoft.com/pt-br/dotnet/fsharp/language-reference/
+- Learn SAFE framework - Most important content - https://safe-stack.github.io/docs/
+    - Saturn for back-end services in F# - SAFE part to care about
+    - Azure as a hosting platform plus associated platform services
+    - Fable for running F# in the web browser
+    - Elmish for client-side user interfaces
+
+    - Function to generate random values:
+        - Use for..to loop to database insertions
+        - DateTime - random dateTime : time range, days range?
+        - pairs - Random options (EUR/GBP, EUR/USD, GBP/USD)
+        - Price = random float range: depending on pairs? Or doesn't matter?
+        - Quantity = random int range: 1 Million, step 500.000, top 3M
+        - Provider = random name
+
+- Conections on PgAdmin using db as address DB and user postgres. Password Docker
+
+- Database model:
+    - pairs
+    - Provider
+    - Price
+    - Quantity
+    - DateTime
+- Do I need to implement VWAP Calculation? (Volume Weighted Average Price - Preço Médio Ponderado por Volume)?
+    - fonte: https://smarttbot.com/trader/como-usar-o-indicador-de-day-trading-vwap/
+- Learn Database migrations dotnet
+    - .NET Entity Framework Core - C#
+    - Npgsql Entity Framework Core Provider - F# compatible but not with migrations
+    - lib Fsharp.Data.SQLProvider - without migrations - NuGET resource
+    - EFCore.FSharp - alpha release - should I use or not?
+    - SAFE framework has Saturn.Dotnet CLI tools for running migrations - open issues, weak documentation!
+- Project build
+- Make project tests
+    - Run Tests: navigate to the tests/Server directory and run the project using dotnet run
+- Project implementation on Ubuntu
+- Learn Api endpoints SAFE
+- Validations on inserting data
+
+
+--- steps
+command = dotnet add package SQLProvider --version 1.2.9
+command = dotnet remove package SQLProvider
+command = dotnet add package EntityFrameworkCore.FSharp --prerelease
+command = dotnet add package SQLProvider --version 1.2.9
+command = dotnet ef migrations add InitialCreate
+command = dotnet tool install --global dotnet-ef
+
+let fetchAsyncPipeline (url: string) =
+    FSharp.Data.Http.AsyncRequestString(url)
+    |> Async.Catch
+    |> Async.map (function
+        | Choice1Of2 v -> Ok v
+        | Choice2Of2 e -> Error e.Message)
+
+Unfortunately, Async.map is not yet included. But you can define it for yourself like this:
+
+namespace global
+
+[<RequireQualifiedAccess>]
+module Async =
+
+    let map f xA =
+        async {
+            let! x = xA
+            return f x
+        }
+
+Or, you can use F#'s computation expressions that provide syntactic sugar to write the above in a more imperative style:
+
+let fetchAsyncCe (url: string) =
+    async {
+        try
+            return!
+                FSharp.Data.Http.AsyncRequestString(url)
+                |> Async.map Ok
+            with
+            | e -> return Error e.Message
+    }
+
+Finally, as indicated by brianberns, your expression is only wrapped in the
+Async type. But unlike C#'s Task, async computations represent the program how
+to calculate something, but that program has not yet started and you have to
+explicitly run the asynchronous operation. One of the ways to do this is to use
+Async.RunSynchronously:
+
+Async.RunSynchronously (fetchAsyncCe "https://fsharpforfunandprofit.com/")
+
+
+F# / Linq
+
+    List.filter / .Where
+    List.map / .Select
+    List.iter / .ForEach
+    List.fold / .Aggregate
+    List.reduce / .Aggregate
+    List.collect / .SelectMany
+    List.tryHead / .FirstOrDefault
+    List.head / .First
+    List.sortBy / .OrderBy
+
+
+
+
+
+
+
+
+https://github.com/fsprojects/SQLProvider
+
+
+
+
+Instalar esses dois na pasta src/Server:
+
+EntityFrameworkCore.FSharp
+Npgsql.EntityFrameworkCore.PostgreSQL
+
+depois os comandos na pasta src/Server:
+
+dotnet ef migrations add Initial -v -c PalladrisContext -n Migrations
+dotnet ef database update -v
+
+adding -v at the end of dotnet ef makes it exibits output data when commands
+are done and makes easier to search for source of possible errors.
+
+Adding functions to insert and get informations to Database
+- Using library indicated on F# documentation (Npgsql.FSharp) makes coding
+easier to write and better understood since it's wrappers under abstract ma-
+nagement of data.
+
+dotnet paket add Npgsql.FSharp -p Server
+Simple functions to return data.
+
+Giraffe way to handle function
+let handleGetHello =
+        fun (next : HttpFunc) (ctx : HttpContext) ->
+            task {
+                let response = {
+                    Text = "Hello world, from Giraffe!"
+                }
+                return! json response next ctx
+            }

@@ -1,0 +1,20 @@
+Conclusions:
+    (DapperExample)
+    - using just Dapper
+    - Verbose code
+    - Lots of bindings to map data structure
+    - Conection idbconnection just for MSSQL
+    - to use with postgres needed to use package Npgsql.
+    - no migrations on database.
+
+    Next step
+    > minimal case two columns
+    > create database
+    > use Npgsql + EFCore
+
+
+    (Npgsql + EFCore + Giraffe)
+
+
+
+
