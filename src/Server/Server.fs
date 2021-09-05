@@ -11,41 +11,40 @@ open Shared
 open DomainModels
 open Npgsql.FSharp
 
-let transactions = ResizeArray<palladristransaction>()
-let connectionString = "host=localhost;database=palladris;user id=postgres;password=docker;"
+let transactions = ResizeArray<Palladristransaction>()
+let connectionString = "host=localhost;database=teste1;user id=postgres;password=docker;"
 
-let getTransactions (connectionString: string): palladristransaction list =
+let GetTransactions (connectionString: string): Palladristransaction list =
     connectionString
     |> Sql.connect
-    |> Sql.query "SELECT * FROM palladristransaction"
+    |> Sql.query "SELECT * FROM \"PalladrisTransaction\""
     |> Sql.execute (fun read ->
     {
-        id = read.int "id"
-        pairs = read.text "pairs"
-        provider = read.text "provider"
-        price = read.double "price"
-        quantity = read.int "quantity"
-        transactiondate = read.dateTime "transactiondate"
+        Id = read.int "Id"
+        Pairs = read.text "Pairs"
+        Provider = read.text "Provider"
+        Price = read.double "Price"
+        Quantity = read.int "Quantity"
+        TransactionDate = read.dateTime "TransactionDate"
     })
 
 
-let AddTransaction connectionString (transactionData: palladristransaction) =
+let AddTransaction connectionString (transactionData: Palladristransaction) =
     try
-        printfn "%A" connectionString
         connectionString
         |> Sql.connect
-        |> Sql.query "INSERT INTO palladristransaction (pairs, provider, price, quantity, transactionDate) VALUES (@pairs, @provider, @price, @quantity, @transactiondate)"
+        |> Sql.query "INSERT INTO \"PalladrisTransaction\" (\"Pairs\", \"Provider\", \"Price\", \"Quantity\", \"TransactionDate\") VALUES (@Pairs, @Provider, @Price, @Quantity, @TransactionDate)"
         |> Sql.parameters [
-            "pairs", Sql.text transactionData.pairs;
-            "provider", Sql.text transactionData.provider;
-            "price", Sql.double transactionData.price;
-            "quantity", Sql.int transactionData.quantity;
-            "transactiondate", Sql.timestamp transactionData.transactiondate;
+            "Pairs", Sql.text transactionData.Pairs;
+            "Provider", Sql.text transactionData.Provider;
+            "Price", Sql.double transactionData.Price;
+            "Quantity", Sql.int transactionData.Quantity;
+            "TransactionDate", Sql.timestamp transactionData.TransactionDate;
             ]
         |> Sql.executeNonQuery
         |> Ok
     with
-    | e -> Error "Database error occurred while saving transaction"
+    | e -> Error e.Message
 
 module Route =
     let builder typeName methodName =
@@ -54,13 +53,13 @@ module Route =
 
 type IApi =
     {
-      getTransactions: unit -> Async<palladristransaction list>
-      addTransaction: palladristransaction -> Async<int>
+      GetTransactions: unit -> Async<Palladristransaction list>
+      AddTransaction: Palladristransaction -> Async<int>
     }
 let Api =
     {
-        getTransactions = fun () -> async { return getTransactions(connectionString) }
-        addTransaction =
+        GetTransactions = fun () -> async { return GetTransactions(connectionString) }
+        AddTransaction =
           fun palladristransaction ->
               async {
                   match AddTransaction connectionString palladristransaction with

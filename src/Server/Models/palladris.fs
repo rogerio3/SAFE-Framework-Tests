@@ -7,30 +7,30 @@ open System
 
 
 [<CLIMutable>]
-type palladristransaction =
+type Palladristransaction =
     {
-        id : int
+        Id : int
         [<Required>]
-        pairs : string
+        Pairs : string
         [<Required>]
-        provider : string
+        Provider : string
         [<Required>]
-        price : float
+        Price : float
         [<Required>]
-        quantity : int
+        Quantity : int
         [<Required>]
-        transactiondate : DateTime
+        TransactionDate : DateTime
     }
 
 type PalladrisContext() =
     inherit DbContext()
 
-    [<DefaultValue>] val mutable Palladristransaction : DbSet<palladristransaction>
-    member this.palladristransaction with get() = this.palladristransaction and set v = this.palladristransaction <- v
+    [<DefaultValue>] val mutable Palladristransaction : DbSet<Palladristransaction>
+    member this.PalladrisTransaction with get() = this.Palladristransaction and set v = this.Palladristransaction <- v
 
     override _.OnModelCreating builder =
         builder.RegisterOptionTypes() // enables option values for all entities
 
     override __.OnConfiguring(options: DbContextOptionsBuilder) : unit =
-        options.UseNpgsql(@"host=localhost;database=palladris;user id=postgres;password=docker;")
+        options.UseNpgsql(@"host=localhost;database=teste1;user id=postgres;password=docker;")
         |> ignore

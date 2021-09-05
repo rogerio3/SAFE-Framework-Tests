@@ -23,8 +23,12 @@ repo root> docker-compose up -d
 ```
 It will start the database to interact with the application and the PGAdmin if you need to interact with database.
 
-PGAdmin shoud be accessed in your Browser at address http://localhost:8000/browser/#
-Initial configurations:
+### PgAdmin Access:
+- Address: http://localhost:8000/browser/#
+- e-mail: admin@admin.com
+- password: admin
+-
+### PgAdmin Initial configurations:
 - Address: db
 - Username: postgres
 - Password: docker
@@ -62,14 +66,14 @@ dotnet ef database update
 
 - Get all transactions
 Method: GET
-Endpoint: http://localhost:8085/api/IApi/
+Endpoint: http://localhost:8085/api/IApi/GetTransactions
 
 - Add a new transaction
 Method: POST
-Endpoint: http://localhost:8085/api/IApi/addTransaction
+Endpoint: http://localhost:8085/api/IApi/AddTransaction
 JSON body example:
 
-```yaml
+```json
 [
 	{
 	"pairs": "USD/GBP",
